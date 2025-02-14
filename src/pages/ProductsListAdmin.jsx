@@ -3,16 +3,22 @@ import ProductCard from "../components/ProductCard";
 import axiosInstance from "../../utils/axiosInstance";
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
+import { useSpin } from "../providers/SpinnerProvider";
 
 function ProductsListAdmin() {
   const [products, setProducts] = useState([]);
   const [count, setCount] = useState(0);
   const [sortBy, setSortBy] = useState("price");
   const [sortType, setSortType] = useState("ASC");
+
+  const { setLoading } = useSpin();
+
   async function handlePageClick({ selected }) {
+    setLoading(true);
     const response = await axiosInstance.get(
       `/products?page=${selected + 1}&sort=${sortBy}&sortType=${sortType}`
     );
+    setLoading(false);
     setProducts(response.data.data.rows);
     setCount(response.data.data.count);
   }
@@ -33,9 +39,11 @@ function ProductsListAdmin() {
   }, []);
 
   async function getProducts() {
+    setLoading(true);
     const response = await axiosInstance.get(
       `/products?page=1&sort=${sortBy}&sortType=${sortType}`
     );
+    setLoading(false);
     setProducts(response.data.data.rows);
     setCount(response.data.data.count);
   }
@@ -50,17 +58,18 @@ function ProductsListAdmin() {
           Add Product
         </button>
       </Link>
-      <div className="flex justify-end mb-5">
-        <select
-          className="bg-white border border-gray-300 rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-500"
-          onChange={handleSortChange}
-        >
-          <option value="">Sort By</option>
-          <option value="price.ASC">Price (Low to High)</option>
-          <option value="price.DESC">Price (High to Low)</option>
-        </select>
-      </div>
-      {console.log(products)}
+      {products.length !== 0 && (
+        <div className="flex justify-end mb-5">
+          <select
+            className="bg-white border border-gray-300 rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-500"
+            onChange={handleSortChange}
+          >
+            <option value="">Sort By</option>
+            <option value="price.ASC">Price (Low to High)</option>
+            <option value="price.DESC">Price (High to Low)</option>
+          </select>
+        </div>
+      )}
       {!products.length && (
         <section className="flex items-center h-screen p-16 bg-gray-50 dark:bg-gray-700">
           <div className="container flex flex-col items-center">
@@ -90,7 +99,7 @@ function ProductsListAdmin() {
               id={product.id}
               name={product.name}
               image={product.image_url}
-              description={product.description}
+              description={""}
               price={product.price}
               stock={product.stock}
               updateProducts={getProducts}
@@ -98,23 +107,25 @@ function ProductsListAdmin() {
           );
         })}
       </div>
-      <ReactPaginate
-        breakLabel="..."
-        nextLabel="next >"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={Math.ceil(count / 10)}
-        previousLabel="< previous"
-        renderOnZeroPageCount={null}
-        className="flex justify-center gap-2 text-gray-500"
-      >
-        <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
-          Previous
-        </span>
-        <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
-          Next
-        </span>
-      </ReactPaginate>
+      {products.length !== 0 && (
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={Math.ceil(count / 10)}
+          previousLabel="< previous"
+          renderOnZeroPageCount={null}
+          className="flex justify-center gap-2 text-gray-500"
+        >
+          <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+            Previous
+          </span>
+          <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+            Next
+          </span>
+        </ReactPaginate>
+      )}
     </div>
   );
 }

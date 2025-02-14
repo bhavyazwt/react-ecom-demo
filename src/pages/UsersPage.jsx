@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import ProfileCard from "../components/ProfileCard";
+import { useSpin } from "../providers/SpinnerProvider";
 
 function UsersPage() {
   const [users, setUsers] = useState([]);
+  const { setLoading } = useSpin();
   useEffect(() => {
     async function getAllUsers() {
+      setLoading(true);
       const response = await axiosInstance.get("/users");
       setUsers(response.data);
+      setLoading(false);
     }
     getAllUsers();
   }, []);

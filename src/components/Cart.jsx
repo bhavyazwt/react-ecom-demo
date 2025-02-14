@@ -3,17 +3,20 @@ import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
 import postData from "../hooks/postData";
 import { Link, useNavigate } from "react-router-dom";
+import { useSpin } from "../providers/SpinnerProvider";
 
 function Cart() {
   const [cart, setCart] = useState([]);
+  const { setLoading } = useSpin();
   const navigate = useNavigate();
   useEffect(() => {
     getCart();
   }, []);
   async function getCart() {
+    setLoading(true);
     const response = await axiosInstance.get("/cart");
-    // console.log(response.data.data);
     setCart(response.data.data);
+    setLoading(false);
   }
   async function deleteProductFromCart(id) {
     const response = await axiosInstance.delete(`/cart/${id}`);
@@ -26,20 +29,31 @@ function Cart() {
   async function placeOrder() {
     const response = await postData("/order");
     if (response.status === 200) {
+      setLoading(true);
       navigate("/order-confirmed", { state: response.data.data });
+      setLoading(false);
     }
   }
 
   async function updateQuantity(id, type) {
-    const response = await postData("/cart/updateQuantity", {
-      id,
-      type,
-    });
-    if (response.status === 200) {
-      getCart();
-      toast.success("Quantity Updated Successfully");
-    } else {
-      toast.error("Error Updating Product Quantity");
+    try {
+      setLoading(true);
+      const response = await postData("/cart/updateQuantity", {
+        id,
+        type,
+      });
+      setLoading(false);
+      if (response.status === 200) {
+        getCart();
+        toast.success("Quantity Updated Successfully");
+      }
+    } catch (err) {
+      setLoading(false);
+      if (err.status === 500) {
+        toast.error("Stock Not Available");
+      } else {
+        toast.error("Error Updating Product Quantity");
+      }
     }
   }
 
@@ -57,17 +71,24 @@ function Cart() {
             {cart?.products?.map((product) => (
               <div className="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
                 <div className="md:w-4/12 2xl:w-1/4 w-full">
-                  <img
-                    src={product["Product"].image_url}
-                    alt="Black Leather Purse"
-                    className="h-full object-center object-cover md:block hidden"
-                  />
+                  <Link to={{ pathname: `/product/${product["Product"].id}` }}>
+                    <img
+                      src={product["Product"].image_url}
+                      alt="Black Leather Purse"
+                      className="h-full object-center object-cover md:block hidden"
+                    />
+                  </Link>
                 </div>
+
                 <div className="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
                   <div className="flex items-center justify-between w-full">
-                    <p className="text-base font-black leading-none text-gray-800">
-                      {product["Product"].name}
-                    </p>
+                    <Link
+                      to={{ pathname: `/product/${product["Product"].id}` }}
+                    >
+                      <p className="text-base font-black leading-none text-gray-800">
+                        {product["Product"].name}
+                      </p>
+                    </Link>
                     <div className="flex items-center">
                       <button
                         type="button"

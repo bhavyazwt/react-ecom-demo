@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import greentick from "../assets/greentick.png";
 import shoppingCart from "../assets/shopping-cart.png";
 import { Link, useLocation } from "react-router-dom";

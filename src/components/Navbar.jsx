@@ -24,7 +24,7 @@ function Navbar() {
 
   return (
     <div>
-      <header className="text-gray-600 body-font">
+      <header className="text-gray-600 body-font z-10">
         <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
           <Link
             to={{ pathname: "/" }}
@@ -50,7 +50,7 @@ function Navbar() {
               </Link>
             </button>
             {showOptions && (
-              <div className="absolute right-0 w-40 bg-white shadow-lg">
+              <div className="absolute right-0 w-40 z-40 bg-white shadow-lg">
                 {auth && (
                   <>
                     {user?.role === "customer" && (

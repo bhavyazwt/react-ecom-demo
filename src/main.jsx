@@ -21,38 +21,41 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import UpdateOrderStatusAdmin from "./pages/UpdateOrderStatusAdmin";
 import AdminDashboard from "./pages/Dashboard";
 import ProtectedRouteAdmin from "./routes/ProtectedRouteAdmin";
+import SpinnerProvider from "./providers/SpinnerProvider";
 
 ReactDOM.createRoot(root).render(
   <AuthProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Homepage />} />
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
-          <Route path="product/:id" element={<ProductDetails />} />
-          <Route element={<ProtectedRouteUser />}>
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/order-confirmed" element={<OrderConfirmed />} />
-            <Route path="/order-history" element={<OrderHistoryPage />} />
-            <Route path="cart" element={<Cart />} />
+    <SpinnerProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path="/" element={<Homepage />} />
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+            <Route path="product/:id" element={<ProductDetails />} />
+            <Route element={<ProtectedRouteUser />}>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/order-confirmed" element={<OrderConfirmed />} />
+              <Route path="/order-history" element={<OrderHistoryPage />} />
+              <Route path="cart" element={<Cart />} />
+            </Route>
+            <Route element={<ProtectedRouteAdmin />}>
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/add-new-product" element={<AddNewProduct />} />
+              <Route path="/products-list" element={<ProductsListAdmin />} />
+              <Route path="/update-product/:id" element={<UpdateProduct />} />
+              <Route path="/orders" element={<UpdateOrderStatusAdmin />} />
+              <Route path="/dashboard" element={<AdminDashboard />} />
+            </Route>
+            <Route path="/category/:name/:id" element={<Products />} />
           </Route>
-          <Route element={<ProtectedRouteAdmin />}>
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/add-new-product" element={<AddNewProduct />} />
-            <Route path="/products-list" element={<ProductsListAdmin />} />
-            <Route path="/update-product/:id" element={<UpdateProduct />} />
-            <Route path="/orders" element={<UpdateOrderStatusAdmin />} />
-            <Route path="/dashboard" element={<AdminDashboard />} />
-          </Route>
-          <Route path="/category/:name/:id" element={<Products />} />
-        </Route>
 
-        {/* <Route path="dashboard" element={<Dashboard />}>
+          {/* <Route path="dashboard" element={<Dashboard />}>
         <Route index element={<RecentActivity />} />
         <Route path="project/:id" element={<Project />} />
       </Route> */}
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </SpinnerProvider>
   </AuthProvider>
 );

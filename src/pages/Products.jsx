@@ -3,8 +3,10 @@ import { useParams } from "react-router-dom";
 import Card from "../components/Card";
 import axiosInstance from "../../utils/axiosInstance";
 import ReactPaginate from "react-paginate";
+import { useSpin } from "../providers/SpinnerProvider";
 
 function Products() {
+  const { setLoading } = useSpin();
   const { name, id } = useParams();
   const [products, setProducts] = useState([]);
   const [count, setCount] = useState(0);
@@ -12,11 +14,13 @@ function Products() {
   const [sortType, setSortType] = useState("ASC");
 
   async function handlePageClick({ selected }) {
+    setLoading(true);
     const response = await axiosInstance.get(
       `/products/categories/${id}?page=${
         selected + 1
       }&sort=${sortBy}&sortType=${sortType}`
     );
+    setLoading(false);
     setProducts(response.data.rows);
     setCount(response.data.count);
   }
@@ -26,9 +30,11 @@ function Products() {
   }, [sortBy, sortType]);
 
   async function getProductsFromCategoryID() {
+    setLoading(true);
     const response = await axiosInstance.get(
       `/products/categories/${id}?sort=${sortBy}&sortType=${sortType}`
     );
+    setLoading(false);
     setProducts(response.data.rows);
     setCount(response.data.count);
   }
@@ -47,18 +53,20 @@ function Products() {
           <h1 className="text-gray-900 text-3xl title-font font-medium mb-5">
             {name}
           </h1>
-          <div className="flex justify-end mb-5">
-            <select
-              className="bg-white border border-gray-300 rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-500"
-              onChange={handleSortChange}
-            >
-              <option value="">Sort By</option>
-              <option value="price.asc">Price (Low to High)</option>
-              <option value="price.desc">Price (High to Low)</option>
-              <option value="name.asc">Name (A-Z)</option>
-              <option value="name.desc">Name (Z-A)</option>
-            </select>
-          </div>
+          {products.length !== 0 && (
+            <div className="flex justify-end mb-5">
+              <select
+                className="bg-white border border-gray-300 rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-500"
+                onChange={handleSortChange}
+              >
+                <option value="">Sort By</option>
+                <option value="price.asc">Price (Low to High)</option>
+                <option value="price.desc">Price (High to Low)</option>
+                <option value="name.asc">Name (A-Z)</option>
+                <option value="name.desc">Name (Z-A)</option>
+              </select>
+            </div>
+          )}
           <div className="flex flex-wrap -m-4">
             {products.length ? (
               products.map((product) => (
@@ -78,23 +86,25 @@ function Products() {
             )}
           </div>
         </div>
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={Math.ceil(count / 10)}
-          previousLabel="< previous"
-          renderOnZeroPageCount={null}
-          className="flex justify-center gap-2 text-gray-500"
-        >
-          <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
-            Previous
-          </span>
-          <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
-            Next
-          </span>
-        </ReactPaginate>
+        {products.length !== 0 && (
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel="next >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={Math.ceil(count / 10)}
+            previousLabel="< previous"
+            renderOnZeroPageCount={null}
+            className="flex justify-center gap-2 text-gray-500"
+          >
+            <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+              Previous
+            </span>
+            <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+              Next
+            </span>
+          </ReactPaginate>
+        )}
       </section>
     </div>
   );

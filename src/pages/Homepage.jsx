@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import useAxios from "../hooks/api";
-import ReactPaginate from "react-paginate";
 
 function Homepage() {
   const { data, loading, error } = useAxios("/categories");
@@ -15,6 +14,7 @@ function Homepage() {
   return (
     <section className="text-gray-600 body-font">
       <div className="container px-5 py-24 mx-auto">
+        <p className="text-3xl mb-2.5 font-bold">Categories</p>
         <div className="flex flex-wrap -m-4">
           {loading && <p>Loading...</p>}
           {error && <p className="text-red-500">{error.message}</p>}

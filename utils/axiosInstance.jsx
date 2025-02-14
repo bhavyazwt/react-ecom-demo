@@ -66,7 +66,6 @@ axiosInstance.interceptors.response.use(
       toast.error("Login Token Expired!, Login Again");
       window.location.href = "/login"; // Redirect to login
       localStorage.removeItem("token");
-      setAuth(false);
     } else if (error.response?.status === 403) {
       toast.error("You're not authorised to do this action");
     }

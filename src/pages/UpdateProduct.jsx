@@ -2,8 +2,19 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSpin } from "../providers/SpinnerProvider";
 
 function UpdateProduct() {
+  const { setLoading } = useSpin();
+  const [categories, setCategories] = useState([]);
+  async function getCategories() {
+    const response = await axiosInstance.get("/categories");
+    setCategories(response.data);
+  }
+
+  useEffect(() => {
+    getCategories();
+  }, []);
   const [initialData, setinitialData] = useState({
     name: "",
     description: "",
@@ -17,8 +28,10 @@ function UpdateProduct() {
   useEffect(() => {
     async function getProduct() {
       try {
+        setLoading(true);
         const response = await axiosInstance.get(`/products/${id}`);
-        setinitialData(response.data.data[0]);
+        setinitialData(response.data.data.rows[0]);
+        setLoading(false);
       } catch (err) {
         console.log(err);
       }
@@ -41,10 +54,13 @@ function UpdateProduct() {
     if (Object.keys(formData).length === 0) {
       toast.error("No Data To Update!");
     } else {
+      setLoading(true);
+
       const response = await axiosInstance.patch(`/products/${id}`, formData);
       // setinitialData(response.data.data[0]);
       if (response.status === 200)
         toast.success("Product Updated Successfully");
+      setLoading(false);
     }
   };
   return (
@@ -98,14 +114,29 @@ function UpdateProduct() {
         </div>
         <div>
           <label htmlFor="category_id">Category ID</label>
-          <input
+          <select
+            name="category_id"
+            value={initialData.category_id}
+            onChange={handleChange}
+            required
+            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+
+          {/* <input
             type="number"
             name="category_id"
             value={initialData.category_id}
             onChange={handleChange}
             required
             className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
+          /> */}
         </div>
         <div>
           <label htmlFor="image">Image</label>

@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { FaBox, FaTruck, FaCheck, FaTimes } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
+import { useSpin } from "../providers/SpinnerProvider";
 
 const OrderHistoryPage = () => {
   const [orders, setOrders] = useState([]);
+  const { setLoading } = useSpin();
   useEffect(() => {
     fetchOrders();
   }, []);
 
   async function fetchOrders() {
+    setLoading(true);
     const response = await axiosInstance.get("/order");
     setOrders(response.data.data);
+    setLoading(false);
   }
   const [expandedOrder, setExpandedOrder] = useState(null);
 

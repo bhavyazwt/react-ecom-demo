@@ -1,54 +1,8 @@
 import React, { useState } from "react";
-import {
-  FiUsers,
-  FiPackage,
-  FiShoppingBag,
-  FiMoon,
-  FiSun,
-  FiSearch,
-} from "react-icons/fi";
-import { BsThreeDots } from "react-icons/bs";
-import { AiOutlinePlus } from "react-icons/ai";
+import { FiUsers, FiPackage, FiShoppingBag } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
-  const [selectedCard, setSelectedCard] = useState(null);
-
-  const mockData = {
-    users: {
-      total: 1234,
-      recent: [
-        {
-          id: 1,
-          name: "John Doe",
-          email: "john@example.com",
-          date: "2024-01-15",
-        },
-        {
-          id: 2,
-          name: "Jane Smith",
-          email: "jane@example.com",
-          date: "2024-01-14",
-        },
-      ],
-    },
-    products: {
-      total: 456,
-      lowStock: 23,
-      categories: 15,
-    },
-    orders: {
-      pending: 45,
-      processing: 28,
-      completed: 189,
-      cancelled: 12,
-    },
-  };
-
-  const handleCardClick = (cardType) => {
-    setSelectedCard(cardType);
-  };
-
   return (
     <div className={`min-h-screen ${"bg-gray-100"}`}>
       <div className="flex">

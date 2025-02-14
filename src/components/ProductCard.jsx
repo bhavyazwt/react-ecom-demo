@@ -5,6 +5,7 @@ import updateLogo from "../assets/update.png";
 import axiosInstance from "../../utils/axiosInstance";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSpin } from "../providers/SpinnerProvider";
 
 function ProductCard({
   id,
@@ -15,8 +16,13 @@ function ProductCard({
   stock,
   updateProducts,
 }) {
+  const { setLoading } = useSpin();
   async function deleteProduct() {
+    const result = confirm("Are you sure you want to delete this product?");
+    if (!result) return;
+    setLoading(true);
     const response = await axiosInstance.delete(`/products/${id}`);
+    setLoading(false);
     if (response.status === 200) {
       toast.success("Product Deleted Successfully");
       updateProducts();

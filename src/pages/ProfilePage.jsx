@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
 import updateImage from "../assets/update.png";
+import { useSpin } from "../providers/SpinnerProvider";
 function ProfilePage() {
   const [formData, setFormData] = useState({
     first_name: "",
@@ -9,14 +10,17 @@ function ProfilePage() {
     email: "",
   });
   const [isUpdating, setIsUpdating] = useState(false);
+  const { setLoading } = useSpin();
   useEffect(() => {
     getUserProfile();
   }, []);
 
   async function getUserProfile() {
     try {
+      setLoading(true);
       const response = await axiosInstance.get(`/users/profile`);
       setFormData(response.data.data);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }

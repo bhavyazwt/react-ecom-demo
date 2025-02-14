@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import postData from "../hooks/postData";
 import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
-
+import Spinner from "../components/Spinner";
+import { useSpin } from "../providers/SpinnerProvider";
 function AddNewProduct() {
   const [categories, setCategories] = useState([]);
+  const { setLoading } = useSpin();
   async function getCategories() {
     const response = await axiosInstance.get("/categories");
     setCategories(response.data);
@@ -34,6 +36,7 @@ function AddNewProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const response = await postData("/products", formData);
     setFormData({
       name: "",
@@ -43,90 +46,93 @@ function AddNewProduct() {
       category_id: "",
       image: null,
     });
+    setLoading(false);
     console.log(response);
     if (response.status === 201) toast.success("Product Added Successfully");
   };
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Add Product Form</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description</label>
-          <input
-            type="text"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
-        </div>
-        <div>
-          <label htmlFor="price">Price</label>
-          <input
-            type="number"
-            step="0.01"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
-        </div>
-        <div>
-          <label htmlFor="stock">Stock</label>
-          <input
-            type="number"
-            name="stock"
-            value={formData.stock}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
-        </div>
-        <div>
-          <label htmlFor="category_id">Category</label>
-          <select
-            name="category_id"
-            value={formData.category_id}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          >
-            <option value="">Select Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="image">Image</label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleFileChange}
-            accept="image/*"
-            className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
-        </div>
-        <button type="submit" className="w-full">
-          Submit
-        </button>
-      </form>
-    </div>
+    <>
+      <div className=" max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg">
+        <h2 className="text-xl font-bold mb-4">Add Product Form</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+            />
+          </div>
+          <div>
+            <label htmlFor="description">Description</label>
+            <input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+            />
+          </div>
+          <div>
+            <label htmlFor="price">Price</label>
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+            />
+          </div>
+          <div>
+            <label htmlFor="stock">Stock</label>
+            <input
+              type="number"
+              name="stock"
+              value={formData.stock}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+            />
+          </div>
+          <div>
+            <label htmlFor="category_id">Category</label>
+            <select
+              name="category_id"
+              value={formData.category_id}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="image">Image</label>
+            <input
+              type="file"
+              name="image"
+              onChange={handleFileChange}
+              accept="image/*"
+              className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
+            />
+          </div>
+          <button type="submit" className="w-full">
+            Submit
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
 

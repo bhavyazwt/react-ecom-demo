@@ -2,24 +2,29 @@ import React, { useState, useEffect } from "react";
 import { FaBox, FaTruck, FaCheck, FaTimes } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
-import Pagination from "../components/Pagination";
 import ReactPaginate from "react-paginate";
+import { useSpin } from "../providers/SpinnerProvider";
 const UpdateOrderStatusAdmin = () => {
   const [orders, setOrders] = useState([]);
   const [count, setCount] = useState(0);
+  const { setLoading } = useSpin();
   useEffect(() => {
     fetchOrders();
   }, []);
 
   async function handlePageClick({ selected }) {
+    setLoading(true);
     const response = await axiosInstance.get(
       `/order/order/allOrders?page=${selected + 1}`
     );
+    setLoading(false);
     setOrders(response.data.data.rows);
     setCount(response.data.data.count);
   }
   async function fetchOrders() {
+    setLoading(true);
     const response = await axiosInstance.get("/order/order/allOrders");
+    setLoading(false);
     setOrders(response.data.data.rows);
     setCount(response.data.data.count);
   }
@@ -144,23 +149,25 @@ const UpdateOrderStatusAdmin = () => {
               <p className="text-gray-500">No orders found.</p>
             </div>
           )}
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel="next >"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={5}
-            pageCount={Math.ceil(count / 10)}
-            previousLabel="< previous"
-            renderOnZeroPageCount={null}
-            className="flex justify-center gap-2 text-gray-500"
-          >
-            <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
-              Previous
-            </span>
-            <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
-              Next
-            </span>
-          </ReactPaginate>
+          {orders.length !== 0 && (
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={Math.ceil(count / 10)}
+              previousLabel="< previous"
+              renderOnZeroPageCount={null}
+              className="flex justify-center gap-2 text-gray-500"
+            >
+              <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+                Previous
+              </span>
+              <span className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+                Next
+              </span>
+            </ReactPaginate>
+          )}
         </div>
       </div>
     </div>

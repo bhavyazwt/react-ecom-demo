@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import axiosInstance from "../../utils/axiosInstance";
+import { useSpin } from "../providers/SpinnerProvider";
 const useAxios = (url) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     let isMounted = true;
 
