@@ -1,7 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import postData from "../hooks/postData";
+import axiosInstance from "../../utils/axiosInstance";
+import { toast } from "react-toastify";
 
 function AddNewProduct() {
+  const [categories, setCategories] = useState([]);
+  async function getCategories() {
+    const response = await axiosInstance.get("/categories");
+    setCategories(response.data);
+  }
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -20,9 +32,9 @@ function AddNewProduct() {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = postData("/products", formData);
+    const response = await postData("/products", formData);
     setFormData({
       name: "",
       description: "",
@@ -31,6 +43,7 @@ function AddNewProduct() {
       category_id: "",
       image: null,
     });
+    console.log(response);
     if (response.status === 201) toast.success("Product Added Successfully");
   };
   return (
@@ -83,15 +96,21 @@ function AddNewProduct() {
           />
         </div>
         <div>
-          <label htmlFor="category_id">Category ID</label>
-          <input
-            type="number"
+          <label htmlFor="category_id">Category</label>
+          <select
             name="category_id"
             value={formData.category_id}
             onChange={handleChange}
             required
             className="border border-gray-300 rounded-md px-3 w-[300px] ml-2 "
-          />
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label htmlFor="image">Image</label>

@@ -1,9 +1,9 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // Base API URL
 const API_BASE_URL = "http://localhost:5050/api";
-
 // Get stored token function (Modify as per your auth setup)
 const getAuthToken = () => localStorage.getItem("token");
 
@@ -59,8 +59,15 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem("token"); // Remove invalid token
       window.location.href = "/login"; // Redirect to login
     }
-
-    if (error.response?.status === 403) {
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.error === "Unauthenticated Access, Login Again"
+    ) {
+      toast.error("Login Token Expired!, Login Again");
+      window.location.href = "/login"; // Redirect to login
+      localStorage.removeItem("token");
+      setAuth(false);
+    } else if (error.response?.status === 403) {
       toast.error("You're not authorised to do this action");
     }
 

@@ -10,13 +10,16 @@ import { toast } from "react-toastify";
 
 function Navbar() {
   const { auth, user, setAuth } = useAuth();
-  const [showSignOut, setShowSignOut] = useState(user ? true : false);
   const [showOptions, setShowOptions] = useState(false);
   const handleSignOut = () => {
     toast.success("Signout Success");
     localStorage.removeItem("token");
     setAuth(false);
     window.location.href = "/login";
+  };
+
+  const handleToggle = () => {
+    setShowOptions(!showOptions);
   };
 
   return (
@@ -34,11 +37,10 @@ function Navbar() {
           </nav>
           <div className="relative">
             <button
-              onClick={() => setShowSignOut(!showSignOut)}
               className="inline-flex items-center border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0"
+              onClick={handleToggle}
             >
               <img src={userAvatar} width="20px" className="mr-2" alt="" />
-
               <Link
                 to={{
                   ...(!auth && { pathname: "/signup" }),
@@ -47,28 +49,36 @@ function Navbar() {
                 {auth ? `Hi, ${user.first_name}!` : "Sign Up"}
               </Link>
             </button>
-            {auth && showSignOut && (
-              <>
-                <Link to={{ pathname: "/profile" }}>
-                  <button className="absolute right-0 mt-10 py-1 px-3 border-0 bg-white text-gray-700 rounded shadow-lg hover:bg-gray-100">
-                    Profile
-                  </button>
-                </Link>
-                <Link to={{ pathname: "/order-history" }}>
-                  <button className="absolute right-0 mt-20 py-1 px-3 border-0 bg-white text-gray-700 rounded shadow-lg hover:bg-gray-100">
-                    Order History
-                  </button>
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="absolute right-0 mt-30 py-1 px-3 border-0 bg-white text-gray-700 rounded shadow-lg hover:bg-gray-100"
-                >
-                  Sign Out
-                </button>
-              </>
+            {showOptions && (
+              <div className="absolute right-0 w-40 bg-white shadow-lg">
+                {auth && (
+                  <>
+                    {user?.role === "customer" && (
+                      <>
+                        <Link to={{ pathname: "/profile" }}>
+                          <button className="block w-full py-1 px-3 border-0 bg-white text-gray-700 rounded hover:bg-gray-100">
+                            Profile
+                          </button>
+                        </Link>
+                        <Link to={{ pathname: "/order-history" }}>
+                          <button className="block w-full py-1 px-3 border-0 bg-white text-gray-700 rounded hover:bg-gray-100">
+                            Order History
+                          </button>
+                        </Link>
+                      </>
+                    )}
+                    <button
+                      onClick={handleSignOut}
+                      className={`block w-full py-1 px-3 border-0 bg-white text-gray-700 rounded hover:bg-gray-100`}
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                )}
+              </div>
             )}
           </div>
-          {
+          {user?.role === "admin" && (
             <button className="inline-flex items-center border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 ml-2 md:mt-0">
               {/* <img src={} width="20px" className="mr-2" alt="" /> */}
               <Link
@@ -79,17 +89,19 @@ function Navbar() {
                 Dashboard
               </Link>
             </button>
-          }
-          <Link
-            to={{
-              pathname: "/cart",
-            }}
-          >
-            <button className="inline-flex items-center border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 ml-2 md:mt-0">
-              <img src={shoppingCart} width="20px" className="mr-2" alt="" />
-              Cart
-            </button>
-          </Link>
+          )}
+          {user?.role === "customer" && (
+            <Link
+              to={{
+                pathname: "/cart",
+              }}
+            >
+              <button className="inline-flex items-center border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 ml-2 md:mt-0">
+                <img src={shoppingCart} width="20px" className="mr-2" alt="" />
+                Cart
+              </button>
+            </Link>
+          )}
         </div>
       </header>
     </div>

@@ -24,7 +24,7 @@ function ProfilePage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value.trim() });
   };
 
   const handleSubmit = async (e) => {
@@ -32,10 +32,19 @@ function ProfilePage() {
     if (Object.keys(formData).length === 0) {
       toast.error("No Data To Update!");
     } else {
-      const response = await axiosInstance.put(`/users/profile`, formData);
-      if (response.status === 201) {
-        toast.success("User Updated Successfully");
-        getUserProfile();
+      try {
+        const response = await axiosInstance.put(`/users/profile`, formData);
+        if (response.status === 201) {
+          toast.success("User Updated Successfully");
+          getUserProfile();
+        }
+      } catch (err) {
+        console.log(err);
+        if (err.response.status === 500 && err.response.data.error)
+          toast.error("Email Already Exist For Another User!");
+        else {
+          toast.error("Soemthing Went Wrong! Update Failed!");
+        }
       }
     }
   };

@@ -4,35 +4,33 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 
 const ProtectedRouteAdmin = () => {
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
+  // Handle no token case immediately
   if (!token) {
     toast.error("Login First To Access This Page!");
-    return <Navigate to="/" />;
+    return <Navigate to="/login" replace />;
   }
 
+  // Decode and validate token
   let decodedData;
   try {
     decodedData = jwtDecode(token);
   } catch (error) {
     toast.error("Invalid or expired session. Please log in again.");
     localStorage.removeItem("token");
-    return <Navigate to="/" />;
+    return <Navigate to="/login" replace />;
   }
 
-  useEffect(() => {
-    if (decodedData.role !== "admin") {
-      toast.error("You're not authorized to access this page!");
-      navigate(-1);
-    }
-  }, [navigate, decodedData.role]);
-
-  if (decodedData.role === "admin") {
-    return <Outlet />;
+  // Handle non-admin users
+  if (decodedData.role !== "admin") {
+    toast.error("You're not authorized to access this page!");
+    return <Navigate to="/" replace />;
   }
 
-  return null; // Prevents further rendering in case of unauthorized access
+  // Only render outlet for admin users
+  return <Outlet />;
 };
 
 export default ProtectedRouteAdmin;

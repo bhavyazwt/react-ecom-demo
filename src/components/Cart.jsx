@@ -109,6 +109,11 @@ function Cart() {
                 </div>
               </div>
             ))}
+            {cart?.products?.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <p className="text-gray-500">No Items In Cart found.</p>
+              </div>
+            )}
             <Link
               to={{ pathname: "/" }}
               className="flex font-semibold text-indigo-600 text-sm mt-10"
@@ -122,27 +127,29 @@ function Cart() {
               Continue Shopping
             </Link>
           </div>
-          <div
-            id="summary"
-            className=" w-full   sm:w-1/4   md:w-1/2     px-8 py-10"
-          >
-            <h1 className="font-semibold text-2xl border-b pb-8">
-              Order Summary
-            </h1>
+          {cart?.products?.length !== 0 && (
+            <div
+              id="summary"
+              className=" w-full   sm:w-1/4   md:w-1/2     px-8 py-10"
+            >
+              <h1 className="font-semibold text-2xl border-b pb-8">
+                Order Summary
+              </h1>
 
-            <div className="mt-8">
-              <div className="flex font-semibold justify-between py-6 text-sm uppercase">
-                <span>Total cost</span>
-                <span>₹{cart?.total_price?.toFixed(2)}</span>
+              <div className="mt-8">
+                <div className="flex font-semibold justify-between py-6 text-sm uppercase">
+                  <span>Total cost</span>
+                  <span>₹{cart?.total_price?.toFixed(2)}</span>
+                </div>
+                <button
+                  className="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full"
+                  onClick={placeOrder}
+                >
+                  Place Order
+                </button>
               </div>
-              <button
-                className="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full"
-                onClick={placeOrder}
-              >
-                Place Order
-              </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
